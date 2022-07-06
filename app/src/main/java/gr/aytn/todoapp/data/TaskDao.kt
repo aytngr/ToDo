@@ -59,4 +59,6 @@ interface TaskDao {
 
     @Delete
     fun deleteUser(user: User)
+
+
 }

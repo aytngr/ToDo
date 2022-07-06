@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 import gr.aytn.todoapp.R
 import gr.aytn.todoapp.model.User
@@ -35,6 +36,14 @@ class RegisterActivity : AppCompatActivity() {
 
             if (name!="" && email!="" && password!=""){
                 userViewModel.addUser(User(name,email,password))
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+            }
+            else {
+                tvMessage.text = "Please fill all the fields!"
+                tvMessage.background = ContextCompat.getDrawable(this,
+                    R.drawable.wrong_credentials_message
+                )
             }
         }
         btnToLogin.setOnClickListener {
