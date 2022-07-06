@@ -34,10 +34,14 @@ class TaskAdapter(private val mList: ArrayList<Task>, private val listener: OnIt
             }
         }
         holder.itemView.setOnLongClickListener{
-            Log.i("adapter","$task")
             setTask(task)
             return@setOnLongClickListener false
         }
+
+        holder.itemView.setOnClickListener {
+
+        }
+
     }
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView){
         var tvTitle: TextView = itemView.findViewById(R.id.title)
