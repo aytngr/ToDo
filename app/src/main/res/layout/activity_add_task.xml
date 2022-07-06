@@ -25,65 +25,71 @@
         android:layout_marginStart="10dp"
         android:layout_marginBottom="50dp"
         android:textColor="@color/white"/>
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="bottom"
-        android:padding="20dp"
-        android:background="@drawable/top_corner_radius"
-        android:orientation="vertical">
-        <TextView
+        android:layout_height="match_parent">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Title"
-            android:textSize="20sp"/>
-        <EditText
-            android:id="@+id/et_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
-            android:inputType="text" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Description"
-            android:textSize="20sp"
-            android:layout_marginTop="10dp"/>
-        <EditText
-            android:id="@+id/et_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
-            android:inputType="textMultiLine"
-            android:minLines="5"
-            android:maxLines="5"
-            android:nestedScrollingEnabled="true"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Deadline"
-            android:textSize="20sp"
-            android:layout_marginTop="10dp"/>
-        <EditText
-            android:id="@+id/deadline"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
-            android:inputType="datetime"
-            android:clickable="false"
-            android:cursorVisible="false"
-            android:focusable="false"
-            android:focusableInTouchMode="false"/>
-        <Button
-            android:id="@+id/create_button"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:text="Create a Task"
-            android:textSize="20sp"
-            android:textAllCaps="false"
-            android:layout_gravity="center|bottom"
-            android:layout_marginTop="30dp"
-            android:backgroundTint="@color/blue"/>
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:padding="20dp"
+            android:background="@drawable/top_corner_radius"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Title"
+                android:textSize="20sp"/>
+            <EditText
+                android:id="@+id/et_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:inputType="text" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Description"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"/>
+            <EditText
+                android:id="@+id/et_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:inputType="textMultiLine"
+                android:minLines="5"
+                android:maxLines="5"
+                android:nestedScrollingEnabled="true"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Deadline"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"/>
+            <EditText
+                android:id="@+id/deadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:inputType="datetime"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
+            <Button
+                android:id="@+id/create_button"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:text="Create a Task"
+                android:textSize="20sp"
+                android:textAllCaps="false"
+                android:layout_gravity="center|bottom"
+                android:layout_marginTop="30dp"
+                android:backgroundTint="@color/blue"/>
+        </LinearLayout>
+    </ScrollView>
+
 
 </LinearLayout>

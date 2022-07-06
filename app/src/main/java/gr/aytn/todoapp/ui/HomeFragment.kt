@@ -1,5 +1,6 @@
 package gr.aytn.todoapp.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -52,7 +53,6 @@ class HomeFragment : Fragment(), View.OnCreateContextMenuListener,
 
         binding.apply { registerForContextMenu(recyclerView) }
         registerForContextMenu(recyclerView)
-
 
         taskViewModel.readAllTodaysTasks.observe(viewLifecycleOwner, Observer{
             val adapter = TaskAdapter(it as ArrayList<Task>,this)
@@ -107,6 +107,12 @@ class HomeFragment : Fragment(), View.OnCreateContextMenuListener,
 
     override fun onCheckBoxClick(task: Task, isChecked: Boolean) {
         taskViewModel.onTaskCheckedChanged(task, isChecked)
+        recyclerView.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onTaskClick(task: Task) {
+        val intent = Intent(activity, DetailsActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onCreateContextMenu(

@@ -27,5 +27,9 @@
     <style name="DatePickerTheme.ButtonBarButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@color/blue</item>
     </style>
+    <style name="checkBoxStyle" parent="Base.Theme.AppCompat">
+        <item name="colorAccent">@color/blue</item>
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
 
 </resources>

@@ -26,6 +26,7 @@ class TaskViewModel @Inject constructor(private val repository: TaskRepository,)
     val readAllCompleted: LiveData<List<Task>> = repository.readAllCompleted
     val readAllTodaysTasks: LiveData<List<Task>> = repository.readAllTodaysTasks("$day ${MONTHS[month]} $year")
     fun searchResults(title: String): LiveData<List<Task>> = repository.searchTask(title.lowercase())
+    fun searchByTitleResults(title: String): LiveData<Task> = repository.searchByTitle(title)
     val count: LiveData<Int> = repository.count
     val completedCount: LiveData<Int> = repository.completedCount
 
@@ -35,11 +36,7 @@ class TaskViewModel @Inject constructor(private val repository: TaskRepository,)
             repository.addTask(task)
         }
     }
-    fun searchTask(title: String){
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.searchTask(title.lowercase())
-        }
-    }
+
     fun deleteTask(task: Task){
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteTask(task)

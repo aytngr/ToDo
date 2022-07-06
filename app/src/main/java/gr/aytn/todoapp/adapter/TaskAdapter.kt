@@ -1,5 +1,6 @@
 package gr.aytn.todoapp.adapter
 
+import android.content.Intent
 import android.util.Log
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import gr.aytn.todoapp.R
 import gr.aytn.todoapp.model.Task
+import gr.aytn.todoapp.ui.DetailsActivity
 
 
 class TaskAdapter(private val mList: ArrayList<Task>, private val listener: OnItemClickListener?):RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
@@ -39,7 +41,12 @@ class TaskAdapter(private val mList: ArrayList<Task>, private val listener: OnIt
         }
 
         holder.itemView.setOnClickListener {
-
+            val intent = Intent(view.context, DetailsActivity::class.java)
+            intent.putExtra("title",task.title)
+            intent.putExtra("date",task.date)
+            intent.putExtra("description",task.description)
+            intent.putExtra("state",task.completed)
+            view.context.startActivity(intent)
         }
 
     }
@@ -59,6 +66,7 @@ class TaskAdapter(private val mList: ArrayList<Task>, private val listener: OnIt
     }
     interface OnItemClickListener {
         fun onCheckBoxClick(task: Task, isChecked: Boolean)
+        fun onTaskClick(task:Task)
     }
 
     fun getTask(): Task?{

@@ -8,7 +8,7 @@
     android:background="@color/blue"
     android:orientation="vertical">
     <ImageButton
-        android:id="@+id/back_button"
+        android:id="@+id/back_button_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/back"
@@ -22,10 +22,11 @@
         android:paddingBottom="25dp">
 
         <TextView
-            android:id="@+id/title"
-            android:layout_width="190dp"
-            android:layout_height="65dp"
-            android:layout_marginStart="20dp"
+            android:id="@+id/title_details"
+            android:layout_width="252dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp"
             android:text="Title"
             android:textColor="@color/white"
             android:textSize="30sp"
@@ -34,31 +35,48 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/date"
-            android:layout_width="313dp"
+            android:id="@+id/date_details"
+            android:layout_width="194dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="15dp"
             android:layout_marginTop="5dp"
             android:text="Date"
             android:textColor="@color/white"
             android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title" />
+            app:layout_constraintTop_toBottomOf="@id/title_details" />
 
         <CheckBox
-            android:id="@+id/check_completed"
+            android:id="@+id/checkbox_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="5dp"
-            android:button="@drawable/checkbox_empty_details"
+            android:button="@drawable/checkbox_selector_details"
             android:gravity="center_vertical"
-            android:backgroundTint="@color/white"
+            android:theme="@style/checkBoxStyle"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.437"
-            app:layout_constraintStart_toEndOf="@id/title"
+            app:layout_constraintHorizontal_bias="0.587"
+            app:layout_constraintStart_toEndOf="@id/title_details"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/info_text"
+            android:layout_width="130dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="9dp"
+            android:layout_marginEnd="4dp"
+            android:gravity="center"
+            android:text="Completed"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkbox_details"
+            app:layout_constraintVertical_bias="0.0" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -76,7 +94,7 @@
             android:textSize="20sp"
             android:layout_marginTop="10dp"/>
         <TextView
-            android:id="@+id/et_description"
+            android:id="@+id/description_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="7dp"
