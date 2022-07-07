@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 import gr.aytn.todoapp.R
 import gr.aytn.todoapp.model.User
+import gr.aytn.todoapp.prefs
 import java.util.*
 
 @AndroidEntryPoint
@@ -43,29 +44,32 @@ class LoginActivity : AppCompatActivity() {
 
             userViewModel.findByEmail(email.trim()).observe(this, androidx.lifecycle.Observer {
                 user = it
-            })
 
-            if (user!=null) {
-                if (user!!.email.equals(email.trim()) &&
-                    user!!.password.equals(password.trim())
-                ) {
-                    startActivity(Intent(this, MainActivity::class.java));
-                    finish()
-                }
-                else if(user!!.email.equals(email.trim()) &&
-                    !user!!.password.equals(password.trim())){
-                    etPassword.error = "Wrong Password"
-                    tvMessage.text = "Password is wrong!"
+                if (user!=null) {
+                    if (user!!.email.equals(email.trim()) &&
+                        user!!.password.equals(password.trim())
+                    ) {
+                        prefs.user_id = user!!.id
+                        startActivity(Intent(this, MainActivity::class.java));
+                        finish()
+                    }
+                    else if(user!!.email.equals(email.trim()) &&
+                        !user!!.password.equals(password.trim())){
+                        etPassword.error = "Wrong Password"
+                        tvMessage.text = "Password is wrong!"
+                        tvMessage.background = ContextCompat.getDrawable(this,
+                            R.drawable.wrong_credentials_message
+                        )
+                    }
+                }else{
+                    tvMessage.text = "Email və ya şifrə yanlışdır!"
                     tvMessage.background = ContextCompat.getDrawable(this,
                         R.drawable.wrong_credentials_message
                     )
                 }
-            }else{
-                tvMessage.text = "Email və ya şifrə yanlışdır!"
-                tvMessage.background = ContextCompat.getDrawable(this,
-                    R.drawable.wrong_credentials_message
-                )
-            }
+            })
+
+
         }
     }
 }

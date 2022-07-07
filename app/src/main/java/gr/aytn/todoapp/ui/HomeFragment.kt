@@ -21,6 +21,7 @@ import android.view.MenuItem
 import android.view.MenuInflater
 import android.widget.ImageButton
 import androidx.appcompat.widget.PopupMenu
+import gr.aytn.todoapp.prefs
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(), View.OnCreateContextMenuListener,
@@ -41,10 +42,14 @@ class HomeFragment : Fragment(), View.OnCreateContextMenuListener,
         val tvCompletedTasks: TextView = binding.completedTasks
         val btnMenu: ImageButton = binding.menuButton
 
-        taskViewModel.count.observe(viewLifecycleOwner, Observer{
+//        var currentUserTasks : ArrayList<UserTask> = arrayListOf()
+        var taskIdsOfCurrentUser : ArrayList<Int> = arrayListOf()
+        var tasksOfCurrentUser : ArrayList<Task> = arrayListOf()
+
+        taskViewModel.userTasksCount(prefs.user_id).observe(viewLifecycleOwner, Observer{
             tvTotalTasks.text = it.toString()
         })
-        taskViewModel.completedCount.observe(viewLifecycleOwner, Observer{
+        taskViewModel.userCompletedTasksCount(prefs.user_id).observe(viewLifecycleOwner, Observer{
             tvCompletedTasks.text = it.toString()
         })
 
@@ -54,22 +59,23 @@ class HomeFragment : Fragment(), View.OnCreateContextMenuListener,
         binding.apply { registerForContextMenu(recyclerView) }
         registerForContextMenu(recyclerView)
 
-        taskViewModel.readAllTodaysTasks.observe(viewLifecycleOwner, Observer{
+        taskViewModel.getUserTodaysTasks(prefs.user_id).observe(viewLifecycleOwner, Observer{
             val adapter = TaskAdapter(it as ArrayList<Task>,this)
             recyclerView.adapter = adapter
         })
 
         homeNavView.setOnItemSelectedListener{
-            when(it.itemId){
+            when(it.itemId) {
                 R.id.today -> {
-                    taskViewModel.readAllTodaysTasks.observe(viewLifecycleOwner, Observer{
+                    taskViewModel.getUserTodaysTasks(prefs.user_id).observe(viewLifecycleOwner, Observer{
                         val adapter = TaskAdapter(it as ArrayList<Task>,this)
                         recyclerView.adapter = adapter
                     })
                 }
                 R.id.all -> {
-                    taskViewModel.readAllData.observe(viewLifecycleOwner, Observer{
-                        val adapter = TaskAdapter(it as ArrayList<Task>,this)
+
+                    taskViewModel.getUserTasks(prefs.user_id).observe(viewLifecycleOwner, Observer {
+                        val adapter = TaskAdapter(it as ArrayList<Task>, this)
                         recyclerView.adapter = adapter
                     })
                 }
@@ -84,7 +90,7 @@ class HomeFragment : Fragment(), View.OnCreateContextMenuListener,
             popup.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener() { item ->
                 when (item.itemId) {
                     R.id.delete_completed -> {
-                        taskViewModel.deleteAllCompleted()
+                        taskViewModel.deleteAllCompleted(prefs.user_id)
                     }
                 }
                 true
@@ -97,7 +103,7 @@ class HomeFragment : Fragment(), View.OnCreateContextMenuListener,
     override fun onMenuItemClick(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.delete_completed -> {
-                taskViewModel.deleteAllCompleted()
+                taskViewModel.deleteAllCompleted(prefs.user_id)
                 true
             }
             else -> false

@@ -2,7 +2,9 @@ package gr.aytn.todoapp.ui
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -15,7 +17,9 @@ import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import gr.aytn.todoapp.R
 import gr.aytn.todoapp.model.Task
+import gr.aytn.todoapp.prefs
 import java.util.*
+import androidx.lifecycle.Observer
 import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
@@ -28,6 +32,9 @@ class AddTaskActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_task)
 
         val taskViewModel: TaskViewModel by viewModels()
+        val userViewModel: UserViewModel by viewModels()
+
+        var addedTask: Task? = null
 
         val backBtn: ImageButton = findViewById(R.id.back_button)
         val createBtn: Button = findViewById(R.id.create_button)
@@ -49,17 +56,27 @@ class AddTaskActivity : AppCompatActivity() {
         var selectedDate:String = ""
         var selectedTime:String = ""
 
+        val sharedPreferences: SharedPreferences = this.getSharedPreferences("sharedpref", Context.MODE_PRIVATE)
+
+
         createBtn.setOnClickListener {
             if(date==""){
                 date = "$day ${MONTHS[month]} $year"
             }
             if (etTitle.text.toString() != "" && etDeadline.text.toString() != ""){
                 taskViewModel.addTask(Task(etTitle.text.toString(),etDescription.text.toString(),
-                date,time))
+                date,time, prefs.user_id))
+
+//                taskViewModel.getLastCustomerId().observe(this, Observer{
+//                    Log.i("add","${etTitle.text.toString()}")
+//                    Log.i("add","$it")
+//                    if(it != null){
+//                        userViewModel.addUserTask(UserTask(prefs.user_id,it))
+//                    }
+//                })
                 startActivity(Intent(this, MainActivity::class.java))
             }
         }
-
         etDeadline.setOnClickListener {
 
             val timeDialog =  TimePickerDialog(this,TimePickerDialog.OnTimeSetListener{

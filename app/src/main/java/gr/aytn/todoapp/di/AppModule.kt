@@ -8,7 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import gr.aytn.todoapp.TaskRepository
 import gr.aytn.todoapp.data.TaskDao
-import gr.aytn.todoapp.data.TaskDatabase
+import gr.aytn.todoapp.data.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import javax.inject.Qualifier
@@ -21,12 +21,15 @@ object AppModule {
     @Singleton
     fun provideDatabase(
         app: Application
-    ) = Room.databaseBuilder(app, TaskDatabase::class.java, "task_database")
+    ) = Room.databaseBuilder(app, AppDatabase::class.java, "task_database")
         .fallbackToDestructiveMigration()
         .build()
 
     @Provides
-    fun provideDao(db: TaskDatabase) = db.taskDao()
+    fun provideTaskDao(db: AppDatabase) = db.taskDao()
+
+    @Provides
+    fun provideUserDao(db: AppDatabase) = db.userDao()
 
     @Provides
     fun provideRepository(dao: TaskDao) = TaskRepository(dao)

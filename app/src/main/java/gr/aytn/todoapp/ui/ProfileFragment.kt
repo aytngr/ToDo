@@ -20,9 +20,6 @@ class ProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        userViewModel.readAllUser.observe(viewLifecycleOwner, Observer {
-            Log.i("profile", it.toString())
-        })
 
         return inflater.inflate(R.layout.fragment_profile, container, false)
     }

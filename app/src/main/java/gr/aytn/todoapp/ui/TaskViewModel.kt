@@ -22,13 +22,24 @@ class TaskViewModel @Inject constructor(private val repository: TaskRepository,)
     val MONTHS: ArrayList<String> = arrayListOf("January","February","March","April","May","June","July","August","September","October","November","December")
 
 
-    val readAllData: LiveData<List<Task>> = repository.readAllData
-    val readAllCompleted: LiveData<List<Task>> = repository.readAllCompleted
-    val readAllTodaysTasks: LiveData<List<Task>> = repository.readAllTodaysTasks("$day ${MONTHS[month]} $year")
-    fun searchResults(title: String): LiveData<List<Task>> = repository.searchTask(title.lowercase())
+//    fun findTaskById(task_id:Int): LiveData<Task> = repository.findTaskById(task_id)
+
+    //    fun searchResults(title: String): LiveData<List<Task>> = repository.searchTask(title.lowercase())
+//    val readAllTodaysTasks: LiveData<List<Task>> = repository.readAllTodaysTasks("$day ${MONTHS[month]} $year")
+//    val readAllCompleted: LiveData<List<Task>> = repository.readAllCompleted
+//    val readAllData: LiveData<List<Task>> = repository.readAllData
+
+    fun userTasksCount(user_id: Int): LiveData<Int> = repository.getUserTasksCount(user_id)
+    fun userCompletedTasksCount(user_id: Int): LiveData<Int> = repository.getUserCompletedTasksCount(user_id)
+
+    fun getUserTodaysTasks(user_id: Int): LiveData<List<Task>> = repository.getUserTodaysTasks(user_id, "$day ${MONTHS[month]} $year")
+
+
+    fun getUserTasks(user_id: Int): LiveData<List<Task>> = repository.getUserTasks(user_id)
+    fun getUserCompletedTasks(user_id: Int): LiveData<List<Task>> = repository.getUserCompletedTasks(user_id)
+
     fun searchByTitleResults(title: String): LiveData<Task> = repository.searchByTitle(title)
-    val count: LiveData<Int> = repository.count
-    val completedCount: LiveData<Int> = repository.completedCount
+    fun searchByTitleInsensitive(userId: Int, title:String): LiveData<List<Task>> = repository.searchByTitleInsensitive(userId,title)
 
 
     fun addTask(task: Task){
@@ -42,19 +53,27 @@ class TaskViewModel @Inject constructor(private val repository: TaskRepository,)
             repository.deleteTask(task)
         }
     }
+    fun deleteAllCompleted(userId: Int){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteAllCompleted(userId)
+        }
+    }
     fun onTaskCheckedChanged(task: Task, isChecked: Boolean) {
         viewModelScope.launch {
             repository.updateTask(task.copy(completed = isChecked))
         }
     }
-    fun deleteAll(){
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteAll()
-        }
-    }
-    fun deleteAllCompleted(){
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteAllCompleted()
-        }
-    }
+//    fun deleteAll(){
+//        viewModelScope.launch(Dispatchers.IO) {
+//            repository.deleteAll()
+//        }
+//    }
+//    fun deleteAllCompleted(){
+//        viewModelScope.launch(Dispatchers.IO) {
+//            repository.deleteAllCompleted()
+//        }
+//    }
+//    fun getLastCustomerId(): LiveData<Int> {
+//        return repository.getLastCustomerId()
+//    }
 }

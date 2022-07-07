@@ -15,6 +15,8 @@ import gr.aytn.todoapp.adapter.SearchAdapter
 import gr.aytn.todoapp.databinding.FragmentHomeBinding
 import gr.aytn.todoapp.databinding.FragmentSearchBinding
 import gr.aytn.todoapp.model.Task
+import gr.aytn.todoapp.prefs
+
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
 
@@ -39,9 +41,14 @@ class SearchFragment : Fragment() {
         val btnSearch = binding.btnSearch
         val etSearch = binding.etTitle
 
+        taskViewModel.getUserTasks(prefs.user_id).observe(viewLifecycleOwner, Observer{
+            val adapter = SearchAdapter(it as ArrayList<Task>)
+            recyclerView.adapter = adapter
+        })
+
         btnSearch.setOnClickListener {
             if (etSearch.text.toString() != ""){
-                taskViewModel.searchResults(etSearch.text.toString()).observe(viewLifecycleOwner, Observer{
+                taskViewModel.searchByTitleInsensitive(prefs.user_id, etSearch.text.toString()).observe(viewLifecycleOwner, Observer{
                     val adapter = SearchAdapter(it as ArrayList<Task>)
                     recyclerView.adapter = adapter
                 })
