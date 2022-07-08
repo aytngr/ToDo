@@ -1,4 +1,4 @@
-package gr.aytn.todoapp
+package gr.aytn.todoapp.repository
 
 import androidx.lifecycle.LiveData
 import gr.aytn.todoapp.data.TaskDao

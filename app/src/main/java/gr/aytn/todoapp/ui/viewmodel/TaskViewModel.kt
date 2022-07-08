@@ -1,11 +1,10 @@
-package gr.aytn.todoapp.ui
+package gr.aytn.todoapp.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import gr.aytn.todoapp.TaskRepository
+import gr.aytn.todoapp.repository.TaskRepository
 import gr.aytn.todoapp.model.Task
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

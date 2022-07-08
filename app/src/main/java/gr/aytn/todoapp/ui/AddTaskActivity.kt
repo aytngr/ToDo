@@ -13,13 +13,13 @@ import android.widget.EditText
 import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import gr.aytn.todoapp.R
 import gr.aytn.todoapp.model.Task
 import gr.aytn.todoapp.prefs
 import java.util.*
-import androidx.lifecycle.Observer
+import gr.aytn.todoapp.ui.viewmodel.TaskViewModel
+import gr.aytn.todoapp.ui.viewmodel.UserViewModel
 import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
@@ -53,6 +53,9 @@ class AddTaskActivity : AppCompatActivity() {
         val minute = myCalendar.get(Calendar.MINUTE)
         val MONTHS: ArrayList<String> = arrayListOf("January","February","March","April","May","June","July","August","September","October","November","December")
 
+        var timeDialog: TimePickerDialog?
+        var dateDialog: DatePickerDialog?
+
         var selectedDate:String = ""
         var selectedTime:String = ""
 
@@ -78,23 +81,29 @@ class AddTaskActivity : AppCompatActivity() {
             }
         }
         etDeadline.setOnClickListener {
+            timeDialog = null
+            dateDialog = null
+            if(timeDialog == null && dateDialog == null){
+                timeDialog =  TimePickerDialog(this,TimePickerDialog.OnTimeSetListener{
+                        _,selectedHour,selectedMinute ->
 
-            val timeDialog =  TimePickerDialog(this,TimePickerDialog.OnTimeSetListener{
-                    _,selectedHour,selectedMinute ->
+                    time = "$selectedHour:$selectedMinute"
+                    etDeadline.setText("$time, $date")
+                },hour,minute,true)
 
-                time = "$selectedHour:$selectedMinute"
-                etDeadline.setText("$time, $date")
-            },hour,minute,true)
-            timeDialog.show()
 
-            val dateDialog = DatePickerDialog(this,DatePickerDialog.OnDateSetListener{
-                    _,selectedYear,selectedMonth,selectedDay ->
+                dateDialog = DatePickerDialog(this,DatePickerDialog.OnDateSetListener{
+                        _,selectedYear,selectedMonth,selectedDay ->
 
-                date = "$selectedDay ${MONTHS[selectedMonth]} $selectedYear"
-                etDeadline.setText(date)
-            },year,month,day)
-            dateDialog.datePicker.minDate = System.currentTimeMillis() - 86400000
-            dateDialog.show()
+                    date = "$selectedDay ${MONTHS[selectedMonth]} $selectedYear"
+                    etDeadline.setText(date)
+                },year,month,day)
+                dateDialog!!.datePicker.minDate = System.currentTimeMillis() - 86400000
+
+            }
+            timeDialog?.show()
+            dateDialog?.show()
+
 
 
         }

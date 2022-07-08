@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import gr.aytn.todoapp.R
 import gr.aytn.todoapp.model.User
 import gr.aytn.todoapp.prefs
-import java.util.*
+import gr.aytn.todoapp.ui.viewmodel.UserViewModel
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
@@ -50,6 +50,7 @@ class LoginActivity : AppCompatActivity() {
                         user!!.password.equals(password.trim())
                     ) {
                         prefs.user_id = user!!.id
+                        prefs.token = "custom_token"
                         startActivity(Intent(this, MainActivity::class.java));
                         finish()
                     }

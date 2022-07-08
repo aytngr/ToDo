@@ -10,7 +10,7 @@ interface UserDao {
     //User
 
     @Query("SELECT * FROM user WHERE id LIKE :userId")
-    suspend fun getUserById(userId: String): User?
+    fun getUserById(userId: Int): LiveData<User>
 
 //    @Transaction
 //    @Query("SELECT * FROM user WHERE id = :id")

@@ -10,12 +10,11 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
-import gr.aytn.todoapp.R
 import gr.aytn.todoapp.adapter.SearchAdapter
-import gr.aytn.todoapp.databinding.FragmentHomeBinding
 import gr.aytn.todoapp.databinding.FragmentSearchBinding
 import gr.aytn.todoapp.model.Task
 import gr.aytn.todoapp.prefs
+import gr.aytn.todoapp.ui.viewmodel.TaskViewModel
 
 @AndroidEntryPoint
 class SearchFragment : Fragment() {

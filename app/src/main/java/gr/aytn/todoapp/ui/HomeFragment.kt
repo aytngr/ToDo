@@ -22,6 +22,8 @@ import android.view.MenuInflater
 import android.widget.ImageButton
 import androidx.appcompat.widget.PopupMenu
 import gr.aytn.todoapp.prefs
+import gr.aytn.todoapp.ui.viewmodel.TaskViewModel
+import gr.aytn.todoapp.ui.viewmodel.UserViewModel
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(), View.OnCreateContextMenuListener,
@@ -29,6 +31,7 @@ class HomeFragment : Fragment(), View.OnCreateContextMenuListener,
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val taskViewModel: TaskViewModel by viewModels()
+    private val userViewModel: UserViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,6 +44,7 @@ class HomeFragment : Fragment(), View.OnCreateContextMenuListener,
         val tvTotalTasks: TextView = binding.totalTasks
         val tvCompletedTasks: TextView = binding.completedTasks
         val btnMenu: ImageButton = binding.menuButton
+        val tvUserName = binding.userName
 
 //        var currentUserTasks : ArrayList<UserTask> = arrayListOf()
         var taskIdsOfCurrentUser : ArrayList<Int> = arrayListOf()
@@ -51,6 +55,11 @@ class HomeFragment : Fragment(), View.OnCreateContextMenuListener,
         })
         taskViewModel.userCompletedTasksCount(prefs.user_id).observe(viewLifecycleOwner, Observer{
             tvCompletedTasks.text = it.toString()
+        })
+        userViewModel.getUserById(prefs.user_id).observe(viewLifecycleOwner, Observer{
+            if(it != null){
+                tvUserName.text = "Hi, ${it.name?.substringBefore(" ",it.name)}"
+            }
         })
 
         recyclerView = binding.recyclerview

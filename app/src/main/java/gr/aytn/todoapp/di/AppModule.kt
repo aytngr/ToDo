@@ -6,7 +6,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import gr.aytn.todoapp.TaskRepository
+import gr.aytn.todoapp.repository.TaskRepository
 import gr.aytn.todoapp.data.TaskDao
 import gr.aytn.todoapp.data.AppDatabase
 import kotlinx.coroutines.CoroutineScope

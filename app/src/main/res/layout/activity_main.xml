@@ -45,6 +45,7 @@
             android:contentDescription="@string/app_name"
             android:src="@drawable/plus"
             app:layout_anchor="@+id/bottom_app_bar"
+            app:tint="@color/white"
             app:layout_anchorGravity="top|center" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

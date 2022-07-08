@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 import gr.aytn.todoapp.R
 import gr.aytn.todoapp.model.User
+import gr.aytn.todoapp.ui.viewmodel.UserViewModel
 
 @AndroidEntryPoint
 class RegisterActivity : AppCompatActivity() {

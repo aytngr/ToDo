@@ -1,4 +1,4 @@
-package gr.aytn.todoapp
+package gr.aytn.todoapp.repository
 
 import androidx.lifecycle.LiveData
 import gr.aytn.todoapp.data.TaskDao
@@ -11,6 +11,7 @@ class UserRepository@Inject constructor(private val userDao: UserDao) {
     val readAllUser: LiveData<List<User>> = userDao.getAllUsers()
 
     fun findByEmail(email: String): LiveData<User> = userDao.findByEmail(email)
+    fun getUserById(user_id: Int): LiveData<User> = userDao.getUserById(user_id)
 
     fun addUser(user: User) {
         userDao.addUser(user)
