@@ -34,6 +34,7 @@ class SettingsFragment : Fragment() {
                 startActivity(Intent(activity!!, LoginActivity::class.java))
                 prefs.token = ""
                 prefs.user_id = -1
+                prefs.image = "android.resource://gr.aytn.todoapp/drawable/user_default"
                 activity!!.finish()
             }
             builder.setNegativeButton("Cancel") { dialog, which ->

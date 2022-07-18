@@ -51,6 +51,11 @@ class SearchFragment : Fragment() {
                     val adapter = SearchAdapter(it as ArrayList<Task>)
                     recyclerView.adapter = adapter
                 })
+            }else{
+                taskViewModel.getUserTasks(prefs.user_id).observe(viewLifecycleOwner, Observer{
+                    val adapter = SearchAdapter(it as ArrayList<Task>)
+                    recyclerView.adapter = adapter
+                })
             }
 
         }

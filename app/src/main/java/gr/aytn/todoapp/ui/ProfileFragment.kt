@@ -7,16 +7,20 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import dagger.hilt.android.AndroidEntryPoint
 import gr.aytn.todoapp.databinding.FragmentProfileBinding
+import gr.aytn.todoapp.prefs
 import gr.aytn.todoapp.ui.viewmodel.UserViewModel
 import java.io.File
 import java.io.IOException
@@ -40,6 +44,12 @@ class ProfileFragment : Fragment() {
 
         val image: ImageView = binding.image
         val btnSelectImage: Button = binding.btnEdit
+        val name: TextView = binding.name
+
+        name.text = prefs.name
+
+        image.setImageURI(Uri.parse(prefs.image))
+
         btnSelectImage.setOnClickListener {
             startActivity(Intent(activity!!,EditProfileActivity::class.java))
 

@@ -51,6 +51,7 @@ class LoginActivity : AppCompatActivity() {
                     ) {
                         prefs.user_id = user!!.id
                         prefs.token = "custom_token"
+                        prefs.name = user!!.name!!
                         startActivity(Intent(this, MainActivity::class.java));
                         finish()
                     }

@@ -30,6 +30,11 @@ class UserViewModel @Inject constructor(private val repository: UserRepository,)
             repository.deleteUser(user)
         }
     }
+    fun updateUser(user: User, newName: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateUser(user.copy(name = newName))
+        }
+    }
 
 //    fun addUserTask(userTask: UserTask) {
 //        viewModelScope.launch(Dispatchers.IO) {

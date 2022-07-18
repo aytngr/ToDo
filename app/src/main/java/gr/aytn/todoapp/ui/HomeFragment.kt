@@ -56,11 +56,8 @@ class HomeFragment : Fragment(), View.OnCreateContextMenuListener,
         taskViewModel.userCompletedTasksCount(prefs.user_id).observe(viewLifecycleOwner, Observer{
             tvCompletedTasks.text = it.toString()
         })
-        userViewModel.getUserById(prefs.user_id).observe(viewLifecycleOwner, Observer{
-            if(it != null){
-                tvUserName.text = "Hi, ${it.name?.substringBefore(" ",it.name)}"
-            }
-        })
+        tvUserName.text = "Hi, ${prefs.name.substringBefore(" ", prefs.name)}"
+
 
         recyclerView = binding.recyclerview
         recyclerView.layoutManager = LinearLayoutManager(activity)
