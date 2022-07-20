@@ -36,7 +36,7 @@ class RegisterActivity : AppCompatActivity() {
             val password = etPassword.text.toString()
 
             if (name!="" && email!="" && password!=""){
-                userViewModel.addUser(User(name,email,password))
+                userViewModel.addUser(User(name,email,password,""))
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()
             }

@@ -4,10 +4,14 @@ import android.Manifest
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.CursorWindow
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
+import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -22,17 +26,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import gr.aytn.todoapp.R
 import gr.aytn.todoapp.prefs
 import gr.aytn.todoapp.ui.viewmodel.UserViewModel
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.lang.reflect.Field
+
 
 @AndroidEntryPoint
 class EditProfileActivity : AppCompatActivity() {
     var image: ImageView? = null
     var current_name: EditText? = null
     var btnSave: Button? = null
-    lateinit var bmOptions: BitmapFactory.Options
-    lateinit var currentPhotoPath: String
-    val PERMISSION_REQUEST_CODE  = 123
-    val CAMERA_REQUEST_CODE = 102
-    val REQUEST_CAMERA = 0
     private var imageUri: Uri? = null
 
     private val userViewModel: UserViewModel by viewModels()
@@ -40,11 +43,19 @@ class EditProfileActivity : AppCompatActivity() {
     private val CAMERA_PERMISSION_CODE = 100
     private val STORAGE_PERMISSION_CODE = 101
 
+    var encodedImage: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
 
-
+        try {
+            val field: Field = CursorWindow::class.java.getDeclaredField("sCursorWindowSize")
+            field.setAccessible(true)
+            field.set(null, 100 * 1024 * 1024) //the 100MB is the new size
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         image = findViewById(R.id.change_image)
         current_name = findViewById(R.id.et_current_name)
         btnSave = findViewById(R.id.btn_save)
@@ -52,13 +63,27 @@ class EditProfileActivity : AppCompatActivity() {
         val mCurrentPhotoPath: String = ""
 
         current_name?.setText(prefs.name)
-        image?.setImageURI(Uri.parse(prefs.image))
+
+        userViewModel.getUserById(prefs.user_id).observe(this, Observer {
+            // decode base64 string
+            val bytes: ByteArray = Base64.decode(it.image, Base64.DEFAULT)
+            // Initialize bitmap
+            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            // set bitmap on imageView
+            image?.setImageBitmap(bitmap)
+        })
 
         btnSave?.setOnClickListener {
+
             userViewModel.getUserById(prefs.user_id).observe(this, Observer{
                 if(it != null){
                     userViewModel.updateUser(it, current_name?.text.toString())
                     prefs.name = current_name?.text.toString()
+                    if(encodedImage != ""){
+                        saveUserImage(encodedImage)
+                        Log.i("edit profiel", "${it.image}")
+                    }
+
                 }
             })
             startActivity(Intent(this,MainActivity::class.java))
@@ -66,27 +91,32 @@ class EditProfileActivity : AppCompatActivity() {
         }
 
         btnChangeImage.setOnClickListener {
-//            val storagePermission = checkPermission(
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//                STORAGE_PERMISSION_CODE)
-//
-//            val cameraPermission = checkPermission(Manifest.permission.CAMERA,
-//                CAMERA_PERMISSION_CODE)
 
             if(checkAndRequestPermissions()){
-                openCameraInterface()
+                val builder = android.app.AlertDialog.Builder(this)
+                    .create()
+                val view = layoutInflater.inflate(R.layout.selecting_dialog, null)
+                val galleryButton = view.findViewById<Button>(R.id.btn_gallery)
+                val cameraButton = view.findViewById<Button>(R.id.btn_camera)
+                builder.setView(view)
+                galleryButton.setOnClickListener {
+                    openGallery()
+                    builder.dismiss()
+                }
+                cameraButton.setOnClickListener {
+                    openCamera()
+                    builder.dismiss()
+                }
+                builder.setCanceledOnTouchOutside(true)
+                builder.show()
             }
-
         }
-
     }
     val REQUEST_ID_MULTIPLE_PERMISSIONS = 1
     private fun checkAndRequestPermissions(): Boolean {
 
-        val storagePermission = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
+        val storagePermission =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         val cameraPermission =
             ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
 
@@ -108,20 +138,7 @@ class EditProfileActivity : AppCompatActivity() {
         }
         return true
     }
-    // Function to check and request permission.
-    private fun checkPermission(permission: String, requestCode: Int) : Boolean{
-        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED) {
 
-            // Requesting the permission
-            ActivityCompat.requestPermissions(this, arrayOf(permission), requestCode)
-            return false
-        }
-        return true
-    }
-
-    // This function is called when the user accepts or decline the permission.
-    // Request Code is used to check which permission called this function.
-    // This request code is provided when the user is prompt for permission.
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>,
                                             grantResults: IntArray) {
@@ -140,199 +157,67 @@ class EditProfileActivity : AppCompatActivity() {
             }
         }
     }
-//
-//
-//    val CAMERA_PERMISSION_CODE = 1000;
-//    private fun requestCameraPermission(): Boolean {
-//        var permissionGranted = false// If system os is Marshmallow or Above, we need to request runtime permission
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-//            val cameraPermissionNotGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED
-//            if (cameraPermissionNotGranted){
-//                val permission = arrayOf(Manifest.permission.CAMERA)  // Display permission dialog
-//                requestPermissions(permission, CAMERA_PERMISSION_CODE)
-//            }
-//            else{
-//                // Permission already granted
-//                permissionGranted = true
-//            }
-//        }
-//        else{
-//            // Android version earlier than M -&gt; no need to request permission
-//            permissionGranted = true
-//        }
-//        return permissionGranted
-//    }
-//    private val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
-//    fun requestWrite(): Boolean{
-//        var permissionGranted2 = false
-//        if (ContextCompat.checkSelfPermission(
-//                this,
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE
-//            )
-//            != PackageManager.PERMISSION_GRANTED
-//        ) {
-//            ActivityCompat.requestPermissions(
-//                this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-//                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
-//            )
-//        } else {
-//            permissionGranted2 = true
-//        }
-//        return permissionGranted2
-//    }
-//
-////    private fun requestPermission() {
-////        ActivityCompat.requestPermissions(
-////            this, arrayOf(Manifest.permission.CAMERA),
-////            PERMISSION_REQUEST_CODE
-////        )
-////    }
-//
-//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-//        Log.i("edir profile","$grantResults")
-//        when (requestCode) {
-//            PERMISSION_REQUEST_CODE -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(applicationContext, "Permission Granted", Toast.LENGTH_SHORT).show()
-//
-//            }
-//            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> if (grantResults.size > 0&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(applicationContext, "Permission Granted", Toast.LENGTH_SHORT).show()
-//                openCameraInterface()
-//            }else {
-//                Toast.makeText(applicationContext, "Permission Denied", Toast.LENGTH_SHORT).show()
-//                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-//                    != PackageManager.PERMISSION_GRANTED
-//                ) {
-//                    requestCameraPermission()
-//                    requestWrite()
-//                }
-//
-//            }
-//        }
-//    //        if (requestCode == CAMERA_PERMISSION_CODE) {
-////            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-////                // Permission was granted
-////                openCameraInterface()
-////            }
-////            else{
-////                // Permission was denied
-////                showAlert("Camera permission was denied. Unable to take a picture.")
-////            }
-////        }
-//    }
-//    private fun showAlert(message: String) {
-//        val builder = AlertDialog.Builder(this)
-//        builder.setMessage(message)
-//        builder.setPositiveButton("Ok", null)
-//        val dialog = builder.create()
-//        dialog.show()
-//    }
     private val IMAGE_CAPTURE_CODE = 1001
-    private fun openCameraInterface() {
+    private fun openCamera() {
         val values = ContentValues()
-        values.put(MediaStore.Images.Media.TITLE, "Take Picture")
-        values.put(MediaStore.Images.Media.DESCRIPTION, "Take Picture")
-        imageUri = this.contentResolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)// Create camera intent
-        Log.i("edit proile", "${imageUri}")
+        imageUri = this.contentResolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        val s: String = imageUri.toString()
-        prefs.image = s
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)// Launch intent
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
         startActivityForResult(intent, IMAGE_CAPTURE_CODE)
     }
+
+    private val GALLERY_REQUEST_CODE = 1006
+    fun openGallery() {
+
+        val values = ContentValues()
+//        imageUri = this.contentResolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+//        imageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+
+        val gallery = Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        )
+//        gallery.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+        startActivityForResult(gallery, GALLERY_REQUEST_CODE)
+//        val intent = Intent()
+//        intent.type = "image/*"
+//        intent.action = Intent.ACTION_GET_CONTENT
+//        startActivityForResult(Intent.createChooser(intent, "Select Picture"), GALLERY_REQUEST_CODE)
+    }
+
+    private fun encodeImage(bm: Bitmap): String {
+        val baos = ByteArrayOutputStream()
+        bm.compress(Bitmap.CompressFormat.JPEG, 0, baos)
+        val b: ByteArray = baos.toByteArray()
+        return Base64.encodeToString(b, Base64.DEFAULT)
+    }
+    fun saveUserImage(encodedImage: String){
+        userViewModel.getUserById(prefs.user_id).observe(this, Observer {
+            userViewModel.updateUserImage(it, encodedImage)
+        })
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)// Callback from camera intent
-        if (resultCode == RESULT_OK){
-            // Set image captured to image view
+        if (requestCode == IMAGE_CAPTURE_CODE && resultCode == RESULT_OK){
+            val imageStream: InputStream? = contentResolver.openInputStream(imageUri!!)
+            val selectedImage = BitmapFactory.decodeStream(imageStream)
+            encodedImage = encodeImage(selectedImage)
             image?.setImageURI(imageUri)
+
+//            val s: String = imageUri.toString()
+//            prefs.image = s
+        }
+        else if (requestCode == GALLERY_REQUEST_CODE && resultCode == RESULT_OK && data?.getData()!=null){
+            imageUri = data.data
+            val imageStream: InputStream? = contentResolver.openInputStream(imageUri!!)
+            val selectedImage = BitmapFactory.decodeStream(imageStream)
+            encodedImage = encodeImage(selectedImage)
+            image?.setImageURI(imageUri)
+
+//            val s: String = imageUri.toString()
+//            prefs.image = s
         }
     }
-//
-//
-//    //    override fun onRequestPermissionsResult(
-////    private fun cameraIntent() {
-////        val intent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
-////        startActivityForResult(intent, REQUEST_CAMERA)
-////    }
-////
-//
-//    private fun checkPermission(): Boolean {
-//        return if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-//            != PackageManager.PERMISSION_GRANTED
-//        ) {
-//            // Permission is not granted
-//            false
-//        } else true
-//    }
-////        requestCode: Int,
-////        permissions: Array<out String>,
-////        grantResults: IntArray
-////    ) {
-////        when (requestCode) {
-////            PERMISSION_REQUEST_CODE -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-////                Toast.makeText(applicationContext, "Permission Granted", Toast.LENGTH_SHORT).show()
-////                cameraIntent()
-////            } else {
-////                Toast.makeText(applicationContext, "Permission Denied", Toast.LENGTH_SHORT).show()
-////                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-////                    != PackageManager.PERMISSION_GRANTED
-////                ) {
-////                    requestPermission()
-////                }
-////
-////            }
-////        }
-////    }
-////
-////
-////    private fun setPic() {
-////        // Get the dimensions of the View
-////        val targetW: Int = image?.width!!
-////        val targetH: Int = image?.height!!
-////
-////        val bmOptions = BitmapFactory.Options().apply {
-////            // Get the dimensions of the bitmap
-////            inJustDecodeBounds = true
-////
-////            BitmapFactory.decodeFile(currentPhotoPath, bmOptions)
-////
-////            val photoW: Int = outWidth
-////            val photoH: Int = outHeight
-////
-////            // Determine how much to scale down the image
-////            val scaleFactor: Int = Math.max(1, Math.min(photoW / targetW, photoH / targetH))
-////
-////            // Decode the image file into a Bitmap sized to fill the View
-////            inJustDecodeBounds = false
-////            inSampleSize = scaleFactor
-////            inPurgeable = true
-////        }
-////        BitmapFactory.decodeFile(currentPhotoPath, bmOptions)?.also { bitmap ->
-////            image?.setImageBitmap(bitmap)
-////        }
-////    }
-////
-////    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-////        super.onActivityResult(requestCode, resultCode, data)
-////        val thumbnail  = data?.extras!!["data"] as Bitmap?
-////        createImageFile()
-////        Log.i("Edit Profile", "$currentPhotoPath")
-////        image?.setImageBitmap(thumbnail)
-////    }
-////
-//    @Throws(IOException::class)
-//    private fun createImageFile(): File {
-//        // Create an image file name
-//        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-//        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-//        return File.createTempFile(
-//            "JPEG_${timeStamp}_", /* prefix */
-//            ".jpg", /* suffix */
-//            storageDir /* directory */
-//        ).apply {
-//            // Save a file: path for use with ACTION_VIEW intents
-//            currentPhotoPath = absolutePath
-//        }
-//    }
 
 }
